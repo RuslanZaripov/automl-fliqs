@@ -144,6 +144,8 @@ Below is a list of the models supported in this repository:
 
 - `deit-tiny`, `deit-small`, `deit-base`: DeiT (Data-Efficient Image Transformers) are a series of transformer-based vision models that perform on par with convolutional networks on ImageNet while being data-efficient.
 
+## Notes
+
 ```
 python eval_parallel.py \
     --task mrpc \
@@ -156,7 +158,16 @@ python eval_parallel.py \
     --eval_batch_size 32 \
     --output_root_dir output
 
-python eval_parallel.py --task cifar10 --model_type resnet18 --search --search_space 2,4,8 --num_train_epochs 3 --learning_rate 5e-5 --train_batch_size 32 --eval_batch_size 32 --output_root_dir output
+python eval_parallel.py \
+    --task cifar10 \
+    --model_type resnet18 \
+    --search \
+    --search_space 2,4,8 \
+    --num_train_epochs 3 \
+    --learning_rate 5e-5 \
+    --train_batch_size 32 \
+    --eval_batch_size 32 \
+    --output_root_dir output
 ```
 
 - [FLIQS: One-Shot Mixed-Precision Floating-Point and Integer Quantization Search](https://openreview.net/forum?id=d69NqU8YmM)
