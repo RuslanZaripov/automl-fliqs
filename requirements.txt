@@ -1,0 +1,9 @@
+numpy
+torch
+datasets
+transformers
+argparse
+matplotlib
+scipy
+tensorboard
+tensorflow
