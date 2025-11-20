@@ -24,7 +24,10 @@ def run_multiple_experiments(args: argparse.Namespace, experiments: list) -> Non
         new_args = argparse.Namespace(**new_args_dict)
 
         # Create a new process for the experiment
-        process = Process(target=run_experiment, args=(new_args, experiment, (i+2) % new_args.num_gpus))
+        process = Process(
+            target=run_experiment,
+            args=(new_args, experiment, (i + 2) % new_args.num_gpus),
+        )
         processes.append(process)
         process.start()
 
@@ -33,9 +36,11 @@ def run_multiple_experiments(args: argparse.Namespace, experiments: list) -> Non
         process.join()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = create_arg_parser()
-    parser.add_argument('--num_gpus', type=int, default=4, help='Number of available GPUs')
+    parser.add_argument(
+        "--num_gpus", type=int, default=4, help="Number of available GPUs"
+    )
     args = parser.parse_args()
     print(args)
     #
@@ -78,4 +83,5 @@ if __name__ == '__main__':
     #     })
 
     experiments_list = [{}]
-    run_multiple_experiments(args, experiments_list)
+    # run_multiple_experiments(args, experiments_list)
+    run_experiment(args, experiments_list[0], gpu_id=0)
