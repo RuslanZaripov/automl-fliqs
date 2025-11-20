@@ -248,7 +248,7 @@ def main(args: argparse.Namespace) -> None:
     # Only use a subset of the data for testing
     if args.use_subset:
         for split in raw_datasets.keys():
-            raw_datasets[split] = raw_datasets[split].select(range(5))
+            raw_datasets[split] = raw_datasets[split].select(range(args.subset_size))
 
     model_type = ALL_MODEL_MAP[args.model_type]
     processed_datasets, data_collator, tokenizer, compute_metrics = preprocess_data(
@@ -314,6 +314,10 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     args = create_arg_parser().parse_args()
     print(args)
+
+    # check if use subset and subset size exist
+    if args.use_subset and not hasattr(args, "subset_size"):
+        raise ValueError("If use_subset is set, subset_size must also be specified.")
 
     os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda_visible_devices
 

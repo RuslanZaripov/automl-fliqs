@@ -286,5 +286,11 @@ def create_arg_parser():
         action="store_true",
         help="Whether to use a subset of the training data for faster experiments",
     )
+    parser.add_argument(
+        "--subset_size",
+        type=int,
+        default=100,
+        help="Size of the subset to use if --use_subset is set",
+    )
 
     return parser
