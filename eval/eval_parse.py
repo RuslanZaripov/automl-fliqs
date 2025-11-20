@@ -281,5 +281,10 @@ def create_arg_parser():
         default="cosine",
         help="Entropy schedule type",
     )
+    parser.add_argument(
+        "--use_subset",
+        action="store_true",
+        help="Whether to use a subset of the training data for faster experiments",
+    )
 
     return parser

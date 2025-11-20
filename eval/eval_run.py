@@ -246,8 +246,9 @@ def main(args: argparse.Namespace) -> None:
     raw_datasets = get_raw_datasets(args)
 
     # Only use a subset of the data for testing
-    for split in raw_datasets.keys():
-        raw_datasets[split] = raw_datasets[split].select(range(5))
+    if args.use_subset:
+        for split in raw_datasets.keys():
+            raw_datasets[split] = raw_datasets[split].select(range(5))
 
     model_type = ALL_MODEL_MAP[args.model_type]
     processed_datasets, data_collator, tokenizer, compute_metrics = preprocess_data(
