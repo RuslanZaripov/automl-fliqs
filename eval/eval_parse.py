@@ -287,10 +287,10 @@ def create_arg_parser():
         help="Whether to use a subset of the training data for faster experiments",
     )
     parser.add_argument(
-        "--subset_size",
-        type=int,
-        default=100,
-        help="Size of the subset to use if --use_subset is set",
+        "--subset_ratio",
+        type=float,
+        default=1.0,
+        help="Ratio of the subset to use if --use_subset is set",
     )
 
     return parser

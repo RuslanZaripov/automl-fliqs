@@ -248,7 +248,8 @@ def main(args: argparse.Namespace) -> None:
     # Only use a subset of the data for testing
     if args.use_subset:
         for split in raw_datasets.keys():
-            raw_datasets[split] = raw_datasets[split].select(range(args.subset_size))
+            subset_size = int(len(raw_datasets[split]) * args.subset_ratio)
+            raw_datasets[split] = raw_datasets[split].select(range(subset_size))
 
     model_type = ALL_MODEL_MAP[args.model_type]
     processed_datasets, data_collator, tokenizer, compute_metrics = preprocess_data(
