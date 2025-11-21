@@ -165,7 +165,7 @@ def get_trainer(
     # start rl training after one epoch
     train_dataset_length = len(processed_datasets[train_key])
     steps_per_epoch = train_dataset_length // args.train_batch_size
-    delay_steps = steps_per_epoch
+    delay_steps = steps_per_epoch // 4
 
     if args.search:
         if args.block_search:
