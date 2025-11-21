@@ -88,10 +88,17 @@ def preprocess_data(args, raw_datasets, model_type):
 
 
 def get_training_args(args, run_name, output_dir):
+    if args.user_subset:
+        eval_steps = args.eval_steps // max(1, args.batch_size // 32)
+        log_steps = args.log_steps // max(1, args.batch_size // 32)
+    else:
+        eval_steps = args.eval_steps
+        log_steps = args.log_steps
+
     training_args = TrainingArguments(
         output_dir,
         eval_strategy="steps",
-        eval_steps=args.eval_steps,
+        eval_steps=eval_steps,
         num_train_epochs=args.num_train_epochs,
         learning_rate=args.learning_rate,
         per_device_train_batch_size=args.train_batch_size,
@@ -99,7 +106,7 @@ def get_training_args(args, run_name, output_dir):
         max_steps=args.max_steps,
         logging_dir=output_dir + "/runs",
         run_name=run_name,
-        logging_steps=args.log_steps,
+        logging_steps=log_steps,
         save_strategy=args.save_strategy,
         gradient_checkpointing=args.gradient_checkpointing,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
