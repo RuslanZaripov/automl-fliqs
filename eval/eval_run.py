@@ -87,13 +87,10 @@ def preprocess_data(args, raw_datasets, model_type):
     return processed_datasets, data_collator, tokenizer, compute_metrics
 
 
-def get_training_args(args, run_name, output_dir):
-    if args.use_subset:
-        eval_steps = args.eval_steps // max(1, args.train_batch_size // 32)
-        log_steps = args.log_steps // max(1, args.train_batch_size // 32)
-    else:
-        eval_steps = args.eval_steps
-        log_steps = args.log_steps
+def get_training_args(args, run_name, output_dir, train_dataset_length):
+    steps_per_epoch = train_dataset_length // args.train_batch_size
+    eval_steps = steps_per_epoch // 10
+    log_steps = steps_per_epoch // 20
 
     training_args = TrainingArguments(
         output_dir,
@@ -164,6 +161,12 @@ def get_trainer(
     validation_key = get_validation_key(args.task)
     train_key = "train"
     log_dir = output_dir + "/log"
+
+    # start rl training after one epoch
+    train_dataset_length = len(processed_datasets[train_key])
+    steps_per_epoch = train_dataset_length // args.train_batch_size
+    delay_steps = steps_per_epoch
+
     if args.search:
         if args.block_search:
             block_partitions = BERT_BLOCK_PARTITIONS
@@ -172,7 +175,7 @@ def get_trainer(
         search_options = [int(x) for x in args.search_space.split(",")]
         cost_function = globals()[args.cost_function]
         reinforce_config = ReinforceConfig(
-            delay_steps=args.delay_steps,
+            delay_steps=delay_steps,
             cost_beta=args.cost_beta,
             cost_target=args.cost_target,
             learning_rate=args.rl_learning_rate,
@@ -258,6 +261,8 @@ def main(args: argparse.Namespace) -> None:
             subset_size = int(len(raw_datasets[split]) * args.subset_ratio)
             raw_datasets[split] = raw_datasets[split].select(range(subset_size))
 
+    train_dataset_length = len(raw_datasets["train"])
+
     model_type = ALL_MODEL_MAP[args.model_type]
     processed_datasets, data_collator, tokenizer, compute_metrics = preprocess_data(
         args, raw_datasets, model_type
@@ -271,7 +276,7 @@ def main(args: argparse.Namespace) -> None:
         run_name = current_date_string
         output_dir = args.output_root_dir + "/" + args.task + "/" + current_date_string
 
-    training_args = get_training_args(args, output_dir, run_name)
+    training_args = get_training_args(args, output_dir, run_name, train_dataset_length)
     if model_type in LANGUAGE_MODEL_MAP.values():
         num_labels = get_transformer_num_labels(args.task)
         model = get_transformer_model(model_type, num_labels)
