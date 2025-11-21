@@ -88,9 +88,9 @@ def preprocess_data(args, raw_datasets, model_type):
 
 
 def get_training_args(args, run_name, output_dir):
-    if args.user_subset:
-        eval_steps = args.eval_steps // max(1, args.batch_size // 32)
-        log_steps = args.log_steps // max(1, args.batch_size // 32)
+    if args.use_subset:
+        eval_steps = args.eval_steps // max(1, args.train_batch_size // 32)
+        log_steps = args.log_steps // max(1, args.train_batch_size // 32)
     else:
         eval_steps = args.eval_steps
         log_steps = args.log_steps
