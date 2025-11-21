@@ -232,6 +232,13 @@ class ReinforceTrainer(Trainer):
         else:
             # Get the quant_sample probabilities from the policy network
             quant_probs = self.policy_network()
+
+            # Clamp probabilities to avoid numerical issues
+            quant_probs = quant_probs.clamp(min=1e-8, max=1.0)
+
+            # Renormalize to ensure probabilities sum to 1
+            quant_probs = quant_probs / quant_probs.sum(dim=-1, keepdim=True)
+
             # Sample a quant_sample from the quant_sample probabilities
             quant_sample_indices = torch.multinomial(quant_probs, 1)
 
@@ -343,6 +350,11 @@ class ReinforceTrainer(Trainer):
         """
         # Get the quant_sample probabilities and indices
         quant_probs, quant_sample_indices = self._get_quant_prob_and_indices()
+
+        # print quant_probs values range
+        print(
+            f"Quant_probs range: min={quant_probs.min().item()}, max={quant_probs.max().item()}"
+        )
 
         # Update the bit widths of the quantized modules
         self.update_quantized_modules(quant_sample_indices)
