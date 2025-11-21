@@ -89,8 +89,8 @@ def preprocess_data(args, raw_datasets, model_type):
 
 def get_training_args(args, run_name, output_dir, train_dataset_length):
     steps_per_epoch = train_dataset_length // args.train_batch_size
-    eval_steps = steps_per_epoch // 10
-    log_steps = steps_per_epoch // 20
+    eval_steps = steps_per_epoch // 2
+    log_steps = steps_per_epoch // 4
 
     training_args = TrainingArguments(
         output_dir,
