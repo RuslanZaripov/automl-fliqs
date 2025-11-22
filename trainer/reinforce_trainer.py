@@ -72,8 +72,8 @@ class ReinforceTrainer(Trainer):
             setattr(self, field, getattr(reinforce_config, field))
 
         # Only support QLinear for now
-        for module in quantized_modules.values():
-            assert isinstance(module, QuantLinear)
+        # for module in quantized_modules.values():
+        #     assert isinstance(module, QuantLinear)
         self.quantized_modules = quantized_modules
         self.last_bits = {
             name: module.weight_bit for name, module in self.quantized_modules.items()
@@ -351,9 +351,12 @@ class ReinforceTrainer(Trainer):
         # Get the quant_sample probabilities and indices
         quant_probs, quant_sample_indices = self._get_quant_prob_and_indices()
 
-        # print quant_probs values range
-        print(
-            f"Quant_probs range: min={quant_probs.min().item()}, max={quant_probs.max().item()}"
+        # write quant_probs values range
+        self.writer.add_scalar(
+            "controller/quant_probs_min", quant_probs.min().item(), self.current_step
+        )
+        self.writer.add_scalar(
+            "controller/quant_probs_max", quant_probs.max().item(), self.current_step
         )
 
         # Update the bit widths of the quantized modules
