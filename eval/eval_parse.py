@@ -293,4 +293,17 @@ def create_arg_parser():
         help="Ratio of the subset to use if --use_subset is set",
     )
 
+    parser.add_argument(
+        "--load_model_path",
+        type=str,
+        default=None,
+        help="Path to load a pre-trained model from",
+    )
+    parser.add_argument(
+        "--save_model_path",
+        type=str,
+        default=None,
+        help="Custom path to save the model (default: output_dir/model)",
+    )
+
     return parser

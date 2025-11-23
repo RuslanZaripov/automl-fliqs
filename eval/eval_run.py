@@ -240,6 +240,55 @@ def save_outputs(args, eval_metrics, output_dir, model, trainer):
                 f.write(f"{key}: {value}\n")
 
 
+def save_model(args, model, trainer, output_dir):
+    """Save the trained model and trainer state"""
+    save_path = (
+        args.save_model_path
+        if args.save_model_path
+        else os.path.join(output_dir, "model")
+    )
+
+    trainer.save_model(save_path)
+    print(f"Model saved to {save_path}")
+
+    if args.search and hasattr(trainer, "policy_network"):
+        policy_path = os.path.join(save_path, "policy_network.pt")
+        torch.save(
+            {
+                "policy_network_state_dict": trainer.policy_network.state_dict(),
+                "rl_optimizer_state_dict": trainer.rl_optimizer.state_dict(),
+                "last_bits": trainer.last_bits,
+                "ema_reward": trainer.ema_reward,
+                "current_step": trainer.current_step,
+            },
+            policy_path,
+        )
+        print(f"Policy network saved to {policy_path}")
+
+
+def load_model(args, model, trainer, output_dir):
+    """Load a pre-trained model and trainer state"""
+    model_path = args.load_model_path
+    model = type(model).from_pretrained(model_path)
+
+    if args.search and hasattr(trainer, "policy_network"):
+        policy_path = os.path.join(model_path, "policy_network.pt")
+        if os.path.exists(policy_path):
+            checkpoint = torch.load(policy_path)
+            trainer.policy_network.load_state_dict(
+                checkpoint["policy_network_state_dict"]
+            )
+            trainer.rl_optimizer.load_state_dict(checkpoint["rl_optimizer_state_dict"])
+            trainer.last_bits = checkpoint["last_bits"]
+            trainer.ema_reward = checkpoint["ema_reward"]
+            trainer.current_step = checkpoint["current_step"]
+            print(f"Policy network loaded from {policy_path}")
+
+    print("Model loaded successfully")
+
+    return model, trainer
+
+
 def set_seed(seed):
     """Set seed for reproducibility"""
     random.seed(seed)
@@ -316,8 +365,18 @@ def main(args: argparse.Namespace) -> None:
         compute_metrics,
         output_dir,
     )
+
+    # Load model if specified
+    if args.load_model_path:
+        print(f"Loading model from {args.load_model_path}")
+        model, trainer = load_model(args, model, trainer, output_dir)
+
     trainer.train()
     eval_metrics = trainer.evaluate()
+
+    # Save the model after training
+    if args.save_model_path:
+        save_model(args, model, trainer, output_dir)
 
     # Save the outputs
     save_outputs(args, eval_metrics, output_dir, model, trainer)
