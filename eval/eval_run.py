@@ -284,7 +284,7 @@ def load_model(args, model, trainer, output_dir):
             trainer.current_step = checkpoint["current_step"]
             print(f"Policy network loaded from {policy_path}")
 
-            if hasattr(trainer, 'quantized_modules'):
+            if hasattr(trainer, "quantized_modules"):
                 for name, bit in trainer.last_bits.items():
                     if name in trainer.quantized_modules:
                         trainer.quantized_modules[name].weight_bit = bit

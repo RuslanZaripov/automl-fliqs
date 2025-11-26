@@ -1,3 +1,5 @@
+- Модификация кода из (ресурса)[https://openreview.net/forum?id=d69NqU8YmM]
+
 # Quantization Search
 
 This repository contains the implementation of quantization architecture search for convolutional and transformer models for vision and language tasks. It accompanies the submission FLIQS: Mixed-Precision Floating-Point and Integer Quantization Search. The results in this submission were collected across two codebases: one proprietary that cannot be open-sourced and this open-source version. This code will be further improved during the submission period.
