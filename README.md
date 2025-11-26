@@ -1,4 +1,6 @@
-- Модификация кода из (ресурса)[https://openreview.net/forum?id=d69NqU8YmM]
+- Модификация кода из [ресурса](https://openreview.net/forum?id=d69NqU8YmM)
+
+- Пример запуска [ноутбук](./setup.ipynb)
 
 # Quantization Search
 
